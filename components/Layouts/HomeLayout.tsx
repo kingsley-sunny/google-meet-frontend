@@ -14,7 +14,7 @@ const HomeLayout = ({ className, children }: { className?: string; children: Rea
 
         {/* the signIn button */}
         <div className='flex justify-center items-center space-x-6'>
-          <p className='text-muted-foreground text-xl'>
+          <p className='text-muted-foreground text-xl hidden lg:block'>
             <span className=''>{new Date().toDateString()}</span>
           </p>
 
