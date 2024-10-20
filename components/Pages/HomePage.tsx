@@ -1,10 +1,13 @@
 import { KeyboardIcon } from "lucide-react";
+import { useRouter } from "next/router";
 import VideoIcon from "../Icons/VideoIcon";
 import Container from "../ui/Container";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 
 const HomePage = () => {
+  const router = useRouter();
+
   return (
     <div className='mt-32'>
       <Container>
@@ -31,8 +34,9 @@ const HomePage = () => {
             </div>
 
             <Button
-              type='submit'
+              type='button'
               className='text-xl hover:bg-primary/10 bg-transparent text-primary'
+              onClick={() => router.push("/meeting-page")}
             >
               Join
             </Button>

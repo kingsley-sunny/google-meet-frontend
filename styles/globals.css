@@ -24,6 +24,8 @@
     --input: 214.3 31.8% 91.4%;
     --ring: 221.2 83.2% 53.3%;
     --radius: 0.5rem;
+
+    --background-dark: 225 6% 13%;
   }
 
   .dark {
@@ -46,6 +48,8 @@
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
     --ring: 224.3 76.3% 48%;
+
+    --background-dark: 225 6% 13%;
   }
 }
 
@@ -58,9 +62,9 @@
   }
 }
 
-#videoElement
-{
-    transform: rotateY(180deg);
-    -webkit-transform:rotateY(180deg); /* Safari and Chrome */
-    -moz-transform:rotateY(180deg); /* Firefox */
+#videoElement {
+  transform: rotateY(180deg);
+  -webkit-transform: rotateY(180deg); /* Safari and Chrome */
+  -moz-transform: rotateY(180deg); /* Firefox */
+  filter: brightness(1.2) contrast(1) saturate(1.2);
 }
