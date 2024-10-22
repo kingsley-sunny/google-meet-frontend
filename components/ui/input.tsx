@@ -1,11 +1,21 @@
-import * as React from "react";
-
 import { cn } from "@/lib/utils";
+import * as React from "react";
+import { useController, useFormContext } from "react-hook-form";
 
 export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {}
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ({ className, type, ...props }, ref) => {
+    const { control, setValue } = useFormContext();
+    const {
+      field,
+      formState: { errors },
+    } = useController({
+      name: props.name ?? "",
+      control,
+      defaultValue: props.value ?? "",
+    });
+
     return (
       <input
         type={type}

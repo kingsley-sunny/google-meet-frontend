@@ -28,13 +28,18 @@ const HomePage = () => {
         <div className='grid gap-3 max-w-[600px] mx-auto mt-10 lg:space-x-6 lg:flex items-stretch'>
           <Popover>
             <PopoverTrigger asChild className=''>
-              <Button className='flex w-full space-x-3 py-3 text-base px-8 font-semibold'>
+              <Button className='flex space-x-3 py-3 text-base px-8 font-semibold'>
                 <VideoIcon className='w-5 h-5' />
                 <span>New Meeting</span>
               </Button>
             </PopoverTrigger>
             <PopoverContent className='shadow-xl border-[0.1px] border-border/20 py-3'>
-              <button className='flex py-3 cursor-pointer w-full items-center space-x-4'>
+              <button
+                className='flex py-3 cursor-pointer w-full items-center space-x-4'
+                onClick={() => {
+                  router.push("/auth/login");
+                }}
+              >
                 <PlusIcon className='w-6 h-6' />
                 <p className=''>Create a instant meeting</p>
               </button>
