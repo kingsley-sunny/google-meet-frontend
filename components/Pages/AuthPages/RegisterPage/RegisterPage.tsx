@@ -5,17 +5,21 @@ import { RiGoogleFill } from "react-icons/ri";
 import { useFormManager } from "../../../../base/hooks/useFormManager";
 import { Button } from "../../../ui/button";
 import { Input } from "../../../ui/input";
-import { loginValidator } from "../LoginPage/loginValidator";
 import { useGoogleAuth } from "../hooks/useGoogleAuth";
+import { useRegister } from "../hooks/useRegister";
+import { registerValidator } from "./registerValidator";
 
 const RegisterPage = () => {
-  const { methods } = useFormManager(loginValidator);
-  const { signInWithGoogle } = useGoogleAuth();
+  const { methods, handleSubmit } = useFormManager(registerValidator);
+  const { error, isLoading, handleRegister } = useRegister();
+  const { signInWithGoogle } = useGoogleAuth("register");
 
   return (
     <div className='w-full h-full flex justify-center items-center min-h-[80dvh]'>
       <div className='w-full max-w-md p-8 space-y-3 rounded-lg '>
         <h2 className='text-2xl font-bold text-center text-primary mb-8'>Create account</h2>
+
+        {error && <p className='text-destructive text-center text-sm'>{error.message}</p>}
 
         <Button
           variant={"secondary"}
@@ -32,9 +36,8 @@ const RegisterPage = () => {
           <hr className='flex-grow border-gray-300' />
         </div>
 
-        <p className='text-destructive text-center text-sm'>{"your account is invalid"}</p>
         <FormProvider {...methods}>
-          <form className=''>
+          <form className='' onSubmit={handleSubmit(handleRegister)}>
             <div className='space-y-4'>
               <div>
                 <label className='block text-sm font-medium text-gray-700'>Name</label>

@@ -6,16 +6,20 @@ import { useFormManager } from "../../../../base/hooks/useFormManager";
 import { Button } from "../../../ui/button";
 import { Input } from "../../../ui/input";
 import { useGoogleAuth } from "../hooks/useGoogleAuth";
+import { useLogin } from "../hooks/useLogin";
 import { loginValidator } from "./loginValidator";
 
 const LoginPage = () => {
   const { methods, handleSubmit } = useFormManager(loginValidator);
-  const { signInWithGoogle } = useGoogleAuth();
+  const { signInWithGoogle } = useGoogleAuth("login");
+  const { isLoading, handleLogin, error } = useLogin();
 
   return (
     <div className='w-full h-full flex justify-center items-center min-h-[80dvh]'>
       <div className='w-full max-w-md p-8 space-y-3 rounded-lg '>
         <h2 className='text-2xl font-bold text-center mb-8 text-primary'>Login</h2>
+
+        {error && <p className='text-destructive text-center text-sm'>{error?.message}</p>}
 
         <Button
           variant={"secondary"}
@@ -32,9 +36,8 @@ const LoginPage = () => {
           <hr className='flex-grow border-gray-300' />
         </div>
 
-        <p className='text-destructive text-center text-sm'>{"your account is invalid"}</p>
         <FormProvider {...methods}>
-          <form className=''>
+          <form className='' onSubmit={handleSubmit(handleLogin)}>
             <div className='space-y-4'>
               <div>
                 <label className='block text-sm font-medium text-gray-700'>Email</label>
@@ -55,7 +58,9 @@ const LoginPage = () => {
                 />
               </div>
             </div>
-            <Button className='mt-8 w-full py-3 font-semibold'>Submit</Button>
+            <Button isLoading={isLoading} className='mt-8 w-full py-3 font-semibold'>
+              Submit
+            </Button>
           </form>
         </FormProvider>
 

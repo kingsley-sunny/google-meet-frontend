@@ -4,3 +4,5 @@ export const loginValidator = z.object({
   email: z.string().email("Invalid email"),
   password: z.string().min(5, "Password Length should be more than 5 characters"),
 });
+
+export type LoginFormType = z.infer<typeof loginValidator>;

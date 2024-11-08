@@ -25,6 +25,14 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         )}
         ref={ref}
         {...props}
+        onChange={e => {
+          field.onChange(e);
+          if (props.onChange) {
+            props.onChange(e);
+          }
+        }}
+        onBlur={field.onBlur}
+        // errorMessage={errors[props.name]?.message as string}
       />
     );
   }

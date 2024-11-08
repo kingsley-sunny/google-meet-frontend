@@ -1,15 +1,20 @@
 import { MicOffIcon, MinusIcon, PlusIcon, UserIcon } from "lucide-react";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { BsInfoCircle } from "react-icons/bs";
 import { ImPhoneHangUp } from "react-icons/im";
 import { LuUsers2 } from "react-icons/lu";
 import { MdOutlineMessage, MdOutlineScreenShare } from "react-icons/md";
+
+import { WsContext } from "../../../base/Contexts/IoContext/ioContext";
 import { cn } from "../../../lib/utils";
 import MicIcon from "../../Icons/MicIcon";
 import VideoIcon from "../../Icons/VideoIcon";
 import VideoSlashIcon from "../../Icons/VideoSlashIcon";
 import { Avatar, AvatarFallback, AvatarImage } from "../../ui/avatar";
+import { Button } from "../../ui/button";
+import { ApprovalModal } from "./ApprovalModal";
+import { useMeetingRequestsWebSocket } from "./hooks/useMeetingWebSocket";
 import { useVideoRecord } from "./hooks/useVideoRecord";
 
 const MeetingPage = () => {
@@ -35,8 +40,11 @@ const MeetingPage = () => {
   const router = useRouter();
 
   const [speechRate, setSpeechRate] = useState<number>(0);
-
   const [counter, setCounter] = useState<number>(3);
+
+  const { isApprovalModalOpen, meetingRequests, setIsApprovalModalOpen } =
+    useMeetingRequestsWebSocket();
+  const socket = useContext(WsContext);
 
   const incrementCounter = () => {
     if (counter < 14) {
@@ -59,12 +67,34 @@ const MeetingPage = () => {
     stopScreenShare();
   };
 
-  console.log("speech rate", speechRate);
+  // useEffect(() => {
+  //   if (socket) {
+  //     socket?.on("fuck-response", data => {
+  //       toast.success(data);
+  //     });
+  //   }
+  // }, [socket]);
 
-  console.log("fuck your shit", mediaStream?.getTracks(), screenShareRef?.current?.srcObject);
+  // console.log("speech rate", speechRate);
+
+  // console.log("fuck your shit", mediaStream?.getTracks(), screenShareRef?.current?.srcObject);
 
   return (
     <div className='bg-background-darkBlack flex flex-col  relative h-[100dvh] justify-between text-white px-2 lg:px-8 py-4'>
+      <Button
+        variant={"secondary"}
+        onClick={e => {
+          socket?.emit("fuck", "this is a fuck");
+        }}
+      >
+        OPen
+      </Button>
+      <ApprovalModal
+        requests={meetingRequests}
+        isOpen={isApprovalModalOpen}
+        setIsOpen={setIsApprovalModalOpen}
+      />
+
       <div
         className={cn(
           "py-16 flex gap-4 items-center h-full w-full",
@@ -163,7 +193,7 @@ const MeetingPage = () => {
         </div>
       </div>
 
-      <audio ref={audioRef} autoPlay></audio>
+      <audio ref={audioRef} muted autoPlay></audio>
 
       {/* The bottom nav */}
       <div className='relative z-20 w-full bottom-0 flex justify-between '>

@@ -1,5 +1,5 @@
 import HomeLayout from "../components/Layouts/HomeLayout";
-import HomePage from "../components/Pages/HomePage";
+import HomePage from "../components/Pages/HomePage/HomePage";
 import { cn } from "../lib/utils";
 
 export default function Home() {

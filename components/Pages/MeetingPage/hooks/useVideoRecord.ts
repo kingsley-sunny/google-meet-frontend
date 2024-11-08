@@ -1,5 +1,6 @@
 import { useAtom } from "jotai";
 import { useRef, useState } from "react";
+import { audioSettings, videoSettings } from "../../../../base/constants/constant";
 import { useEffectOnce } from "../../../../base/hooks/useEffectOnce";
 import { audioAtom, videoAtom } from "../../../../base/store/globalAtomStore";
 
@@ -30,17 +31,7 @@ export const useVideoRecord = () => {
   });
 
   const createVideoStream = async () => {
-    const stream = await window.navigator.mediaDevices.getUserMedia({
-      audio: false,
-      video: {
-        width: { ideal: 1280 }, // Set ideal width for better resolution
-        height: { ideal: 720 }, // Set ideal height for better resolution
-        facingMode: "user", // Use the front camera (or 'environment' for the back)
-        frameRate: { ideal: 30 }, // Aim for a higher frame rate for smoother video
-        // Advanced options for brightness and sharpness
-        // (note: not all browsers may support these)
-      },
-    });
+    const stream = await window.navigator.mediaDevices.getUserMedia(videoSettings);
     setVideoStream(stream);
 
     if (videoRef.current) {
@@ -58,16 +49,7 @@ export const useVideoRecord = () => {
   };
 
   const createAudioStream = async () => {
-    const stream = await window.navigator.mediaDevices.getUserMedia({
-      video: false,
-      audio: {
-        echoCancellation: true, // Removes echo from the audio
-        noiseSuppression: true, // Reduces background noise
-        autoGainControl: true, // Adjusts the gain automatically
-        sampleRate: 16000, // Use a higher sample rate for better clarity
-        channelCount: 1, // Mono audio is often clearer for speech
-      },
-    });
+    const stream = await window.navigator.mediaDevices.getUserMedia(audioSettings);
     setAudioStream(stream);
 
     if (audioRef.current) {
@@ -188,5 +170,6 @@ export const useVideoRecord = () => {
     stopScreenShare,
     stopMeeting,
     startMeeting,
+    createVideoStream,
   };
 };
