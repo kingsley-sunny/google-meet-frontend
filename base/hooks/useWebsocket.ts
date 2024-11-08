@@ -18,7 +18,6 @@ export const useWebSocket = () => {
   const [socket, setSocket] = useAtom(webSocketAtom);
 
   useEffectOnce(() => {
-    console.log("useEffectOne", "This effect is rendered");
     if (!socket) {
       initialize();
     }

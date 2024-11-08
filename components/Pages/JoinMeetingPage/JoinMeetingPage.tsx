@@ -5,7 +5,7 @@ import { useRouter } from "next/router";
 import { useContext, useEffect, useRef, useState } from "react";
 import { FormProvider } from "react-hook-form";
 import { videoSettings } from "../../../base/constants/constant";
-import { WsContext } from "../../../base/Contexts/IoContext/ioContext";
+import { WsContext } from "../../../base/Contexts/wsContext/WsContext";
 import { useEffectOnce } from "../../../base/hooks/useEffectOnce";
 import { useFormManager } from "../../../base/hooks/useFormManager";
 import { useAuth } from "../../../base/store/authStore/authStore";
@@ -163,9 +163,9 @@ export const JoinMeetingPage = () => {
                     {
                       meeting_id: router.query["meetingCode"],
                       name: methods.getValues("name"),
+                      user_id: user?.id,
                     },
                     data => {
-                      console.log("🚀 ~~ JoinMeetingPage ~~ handlejoinmeeting:", videoStream);
                       stopVideoStream();
                       router.push(`/${router.query.meetingCode}`);
                     }

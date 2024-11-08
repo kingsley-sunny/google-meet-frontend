@@ -2,7 +2,7 @@ import { useRouter } from "next/router";
 
 import { useContext, useEffect, useState } from "react";
 import { toast } from "sonner";
-import { WsContext } from "../../../../base/Contexts/IoContext/ioContext";
+import { WsContext } from "../../../../base/Contexts/wsContext/WsContext";
 import { useAuth } from "../../../../base/store/authStore/authStore";
 import { AnyFunctionType } from "../../../../base/types/types";
 
@@ -30,6 +30,7 @@ export const useJoinMeetingWebsocket = (onAccepted?: AnyFunctionType) => {
       socket.on(`/meeting-request/${meetingId}/update`, data => {
         setIsLoading(false);
         if (data.data.accepted) {
+          console.log("🚀 ~~ handleJoinMeeting ~~ data.data.meetingToken:", data.data);
           setMeetingToken(data.data.meetingToken);
 
           if (onAccepted) {

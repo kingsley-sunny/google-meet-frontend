@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
-import { WsContext } from "../../../../base/Contexts/IoContext/ioContext";
+import { WsContext } from "../../../../base/Contexts/wsContext/WsContext";
 import { useAuth } from "../../../../base/store/authStore/authStore";
 
 export const useMeetingRequestsWebSocket = () => {
@@ -13,12 +13,9 @@ export const useMeetingRequestsWebSocket = () => {
   // const socket = useSocket();
   const socket = useContext(WsContext);
 
-  useEffect(() => {
-    console.log("fucking socket ", socket?.id);
-  }, [socket]);
-
-  useEffect(() => {
-    if (user && meetingCode && socket) {
+useEffect(() => {
+  if (user && meetingCode && socket) {
+      // CREATE A MEETING REQUEST
       socket.on(`/meeting-request/${meetingCode}/${user?.id}/create`, data => {
         setIsApprovalModalOpen(true);
       });
@@ -31,6 +28,7 @@ export const useMeetingRequestsWebSocket = () => {
       });
 
       if (isApprovalModalOpen) {
+        // GET ALL THE MEETING REQUESTS
         socket.emit("/meeting-requests/get", { meeting_id: meetingCode });
       }
     }

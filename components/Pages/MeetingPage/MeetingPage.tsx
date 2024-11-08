@@ -6,7 +6,10 @@ import { ImPhoneHangUp } from "react-icons/im";
 import { LuUsers2 } from "react-icons/lu";
 import { MdOutlineMessage, MdOutlineScreenShare } from "react-icons/md";
 
-import { WsContext } from "../../../base/Contexts/IoContext/ioContext";
+import { toast } from "sonner";
+import { PeerContext } from "../../../base/Contexts/PeerContext/PeerContext";
+import { WsContext } from "../../../base/Contexts/wsContext/WsContext";
+import { useWebsocketMeetingAuth } from "../../../base/hooks/useWebsocketMeetingAuth";
 import { cn } from "../../../lib/utils";
 import MicIcon from "../../Icons/MicIcon";
 import VideoIcon from "../../Icons/VideoIcon";
@@ -44,7 +47,27 @@ const MeetingPage = () => {
 
   const { isApprovalModalOpen, meetingRequests, setIsApprovalModalOpen } =
     useMeetingRequestsWebSocket();
+  const peer = useContext(PeerContext);
   const socket = useContext(WsContext);
+  const { isLoading } = useWebsocketMeetingAuth({
+    onError(message) {
+      toast.error(message);
+    },
+    onSuccess(data) {
+      toast.success("Successful");
+      console.log("🚀 ~~ onSuccess ~~ peer && mediaStream:", mediaStream);
+      if (peer && mediaStream) {
+        data.data?.users?.forEach((user: any) => {
+          peer.call(user.peer_id, mediaStream);
+        });
+
+        peer.on("call", mediaConnection => {
+          console.log("🚀 ~~ peer.on ~~ mediaConnection:", mediaConnection);
+          mediaConnection.answer(mediaStream);
+        });
+      }
+    },
+  });
 
   const incrementCounter = () => {
     if (counter < 14) {
@@ -67,17 +90,13 @@ const MeetingPage = () => {
     stopScreenShare();
   };
 
-  // useEffect(() => {
-  //   if (socket) {
-  //     socket?.on("fuck-response", data => {
-  //       toast.success(data);
-  //     });
-  //   }
-  // }, [socket]);
-
-  // console.log("speech rate", speechRate);
-
-  // console.log("fuck your shit", mediaStream?.getTracks(), screenShareRef?.current?.srcObject);
+  if (isLoading) {
+    return (
+      <div className='bg-background-darkBlack flex flex-col  relative h-[100dvh] justify-between text-white px-2 lg:px-8 py-4'>
+        <div>Loading..</div>
+      </div>
+    );
+  }
 
   return (
     <div className='bg-background-darkBlack flex flex-col  relative h-[100dvh] justify-between text-white px-2 lg:px-8 py-4'>
