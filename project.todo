@@ -1,0 +1,11 @@
+Todo for today Nov 9, 2025:
+  ✔ create a new video recording hook, but this hook will have a single video and audio stream: @done(24-11-10 13:48)
+  ✔ create a screenshare stream hook that will have manage only video @done(24-11-10 13:48)
+
+
+Todo for today Nov 10, 2025: 
+  make sure that the video conferencing is working for multiple users:
+    ☐ make sure that the remote stream is displayed in the media stream and other wise
+    ☐ make sure that the user stream is available if he joins a meeting
+    
+

@@ -2,14 +2,15 @@ import { DevTool } from "@hookform/devtools";
 import { useAtom } from "jotai";
 import { MicOffIcon, VideoIcon } from "lucide-react";
 import { useRouter } from "next/router";
-import { useContext, useEffect, useRef, useState } from "react";
+import { MediaConnection } from "peerjs";
+import { Dispatch, SetStateAction, useContext, useEffect, useState } from "react";
 import { FormProvider } from "react-hook-form";
-import { videoSettings } from "../../../base/constants/constant";
+import { useFakeVideoStream } from "../../../base/Contexts/MediaContext/useFakeVideoStream";
 import { WsContext } from "../../../base/Contexts/wsContext/WsContext";
-import { useEffectOnce } from "../../../base/hooks/useEffectOnce";
 import { useFormManager } from "../../../base/hooks/useFormManager";
 import { useAuth } from "../../../base/store/authStore/authStore";
 import { audioAtom, videoAtom } from "../../../base/store/globalAtomStore";
+import { AnyFunctionType } from "../../../base/types/types";
 import { cn } from "../../../lib/utils";
 import MicIcon from "../../Icons/MicIcon";
 import VideoSlashIcon from "../../Icons/VideoSlashIcon";
@@ -19,76 +20,52 @@ import { Input } from "../../ui/input";
 import { useJoinMeetingWebsocket } from "./hooks/useJoinMeeting";
 import { joinMeetingValidator } from "./joinMeetingValidator";
 
-export const JoinMeetingPage = () => {
+export const JoinMeetingPage = ({
+  onAccepted,
+  setStreams,
+}: {
+  onAccepted: (data: any, peerCall?: MediaConnection) => void;
+  handleJoinMeeting?: (data: any, onAccepted?: AnyFunctionType) => void;
+  setStreams?: Dispatch<SetStateAction<MediaStream[]>>;
+}) => {
   // const { startMeeting } = useVideoRecord();
   const { user } = useAuth();
   const [meetingUser, setMeetingUser] = useState<any>();
   const router = useRouter();
   const { methods, control, handleSubmit } = useFormManager(joinMeetingValidator);
+  const [isAudioEnabled, setIsAudioMuted] = useAtom(audioAtom);
   const [isVideoOpen, setIsVideoOpen] = useAtom(videoAtom);
-  const [isAudioEnabled, setIsAudioEnabled] = useAtom(audioAtom);
-  const [videoStream, setVideoStream] = useState<MediaStream | undefined>();
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const { handleJoinMeeting, isLoading } = useJoinMeetingWebsocket(data => {
-    console.log("🚀 ~~ JoinMeetingPage ~~ videoStream:", videoStream);
-    // stopVideoStream();
-    // videoStream.getTracks().forEach(track => track.stop());
 
-    // router.push(`/${router.query.meetingCode}`);
-  });
   const socket = useContext(WsContext);
 
-  const createVideoStream = async () => {
-    const stream = await window.navigator.mediaDevices.getUserMedia(videoSettings);
-    setVideoStream(stream);
+  const { fakeVideoRef, stopFakeStream } = useFakeVideoStream();
 
-    if (videoRef.current) {
-      videoRef.current.srcObject = stream;
-    }
-    return stream;
-  };
-
-  const stopVideoStream = () => {
-    if (videoStream) {
-      videoStream.getTracks().forEach(track => track.stop());
-      setVideoStream(undefined);
-    }
-  };
-
-  const toggleVideo = () => {
-    setIsVideoOpen(!isVideoOpen);
-  };
-
-  const toggleAudio = () => {
-    setIsAudioEnabled(!isAudioEnabled);
-  };
+  const { handleJoinMeeting } = useJoinMeetingWebsocket();
 
   useEffect(() => {
     if (user) {
       setMeetingUser(user as any);
     }
+    return () => {};
   }, []);
 
-  useEffectOnce(() => {
-    createVideoStream();
+  function toggleVideo() {
+    setIsVideoOpen(!isVideoOpen);
+  }
 
-    return () => {
-      if (videoStream) {
-        videoStream.getTracks().forEach(track => track.stop());
-      }
-    };
-  });
+  function toggleMic() {
+    setIsAudioMuted(!isAudioEnabled);
+  }
 
   return (
     <Container className='min-h-[80dvh] flex items-center w-full justify-center'>
-      <Button onClick={() => stopVideoStream()}>Off meeting</Button>
       <div className='grid lg:grid-cols-5 w-full lg:justify-center items-center gap-12'>
         {/* video call section */}
         <div className='w-full h-96  lg:col-span-3'>
           <div className={cn("py-6 px-2 lg:px-4 mx-auto h-full w-full relative rounded-xl ")}>
             <div className='absolute inset-0 flex justify-center w-full h-full'>
               <video
-                ref={videoRef}
+                ref={fakeVideoRef}
                 autoPlay
                 id='videoElement'
                 className={cn("object-cover")}
@@ -118,14 +95,14 @@ export const JoinMeetingPage = () => {
                   {isAudioEnabled ? (
                     <button
                       className='w-12 h-12 bg-white/15 rounded-full flex justify-center items-center'
-                      onClick={toggleAudio}
+                      onClick={toggleMic}
                     >
                       <MicIcon className='w-7 h-7 text-white' />
                     </button>
                   ) : (
                     <button
                       className='w-12 h-12 bg-destructive rounded-full flex justify-center items-center'
-                      onClick={toggleAudio}
+                      onClick={toggleMic}
                     >
                       <MicOffIcon className='w-7 h-7 text-white' />
                     </button>
@@ -159,19 +136,23 @@ export const JoinMeetingPage = () => {
 
               <Button
                 onClick={() => {
-                  handleJoinMeeting(
-                    {
-                      meeting_id: router.query["meetingCode"],
-                      name: methods.getValues("name"),
-                      user_id: user?.id,
-                    },
-                    data => {
-                      stopVideoStream();
-                      router.push(`/${router.query.meetingCode}`);
-                    }
-                  );
+                  if (handleJoinMeeting) {
+                    handleJoinMeeting(
+                      {
+                        meeting_id: router.query["meetingCode"],
+                        name: methods.getValues("name"),
+                        user_id: user?.id,
+                      },
+                      data => {
+                        stopFakeStream();
+                        if (onAccepted) {
+                          onAccepted(data);
+                        }
+                      }
+                    );
+                  }
                 }}
-                isLoading={isLoading}
+                // isLoading={isLoading}
                 size={"lg"}
                 type='button'
                 className='rounded-full'

@@ -13,8 +13,8 @@ export interface IAuth {
   userEmail: CookieValueTypes;
   setUserEmail: (userEmail: string) => void;
 
-  tempUser: { id: string; name: string };
-  setTempUser: (id: string, name: string) => void;
+  tempUser: { name: string };
+  setTempUser: (name: string) => void;
 
   meetingToken: string;
   setMeetingToken: (token: string) => void;

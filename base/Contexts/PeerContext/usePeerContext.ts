@@ -1,8 +1,14 @@
-import Peer from "peerjs";
+import Peer, { MediaConnection } from "peerjs";
 import { useState } from "react";
 import { useEffectOnce } from "../../hooks/useEffectOnce";
 
-export const usePeerjs = () => {
+export const usePeerjs = ({
+  onOpen,
+  onCall,
+}: {
+  onOpen?: (id: string) => void;
+  onCall?: (connection: MediaConnection) => void;
+}) => {
   const [peer, setPeer] = useState<Peer>();
 
   useEffectOnce(() => {
@@ -14,6 +20,20 @@ export const usePeerjs = () => {
 
     if (peerConnection) {
       setPeer(peerConnection);
+
+      peerConnection.on("open", id => {
+        if (onOpen) {
+          onOpen(id);
+        }
+      });
+
+      peerConnection.on("call", connection => {
+        // alert("A call is coming");
+
+        if (onCall) {
+          onCall(connection);
+        }
+      });
     }
 
     return () => {

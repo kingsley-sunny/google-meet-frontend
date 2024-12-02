@@ -20,3 +20,8 @@ export const audioSettings: MediaStreamConstraints = {
     channelCount: 1, // Mono audio is often clearer for speech
   },
 };
+
+export const VIDEO_AND_AUDIO_STREAM_SETTINGS: MediaStreamConstraints = {
+  video: videoSettings.video,
+  audio: audioSettings.audio,
+};

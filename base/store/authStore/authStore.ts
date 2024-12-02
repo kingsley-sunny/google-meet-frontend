@@ -53,11 +53,12 @@ export const useAuth = create<IAuth>(set => ({
 
   get tempUser() {
     const tempUser = getCookie("tempUser");
-    return tempUser as any;
+    if (tempUser) return JSON.parse(tempUser as string) as any;
+    return undefined;
   },
 
-  setTempUser(id, name) {
-    const tempUser = JSON.stringify({ id, name });
+  setTempUser(name) {
+    const tempUser = JSON.stringify({ name });
     setCookie("tempUser", tempUser);
   },
 

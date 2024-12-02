@@ -40,7 +40,7 @@ export const ApprovalModal = ({
                     <button
                       className='text-primary'
                       onClick={() => {
-                        handleRequest(request.socketId, "accept");
+                        handleRequest(request, "accept");
                         setIsOpen(false);
                       }}
                     >
@@ -49,7 +49,7 @@ export const ApprovalModal = ({
                     <button
                       className='text-destructive'
                       onClick={() => {
-                        handleRequest(request.socketId, "reject");
+                        handleRequest(request, "reject");
                         setIsOpen(false);
                       }}
                     >

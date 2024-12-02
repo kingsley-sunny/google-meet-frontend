@@ -1,8 +1,8 @@
 import { useAtom } from "jotai";
 import { useRef, useState } from "react";
-import { audioSettings, videoSettings } from "../../../../base/constants/constant";
-import { useEffectOnce } from "../../../../base/hooks/useEffectOnce";
-import { audioAtom, videoAtom } from "../../../../base/store/globalAtomStore";
+import { audioSettings, videoSettings } from "../../constants/constant";
+import { useEffectOnce } from "../../hooks/useEffectOnce";
+import { audioAtom, videoAtom } from "../../store/globalAtomStore";
 
 export const useVideoRecord = () => {
   const [mediaStream, setMediaStream] = useState<MediaStream | undefined>();

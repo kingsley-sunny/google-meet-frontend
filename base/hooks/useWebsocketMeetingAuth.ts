@@ -4,7 +4,7 @@ import { PeerContext } from "../Contexts/PeerContext/PeerContext";
 import { WsContext } from "../Contexts/wsContext/WsContext";
 import { useAuth } from "../store/authStore/authStore";
 import { AnyFunctionType } from "../types/types";
-
+let counter = 1;
 export const useWebsocketMeetingAuth = ({
   onSuccess,
   onError,
@@ -16,52 +16,35 @@ export const useWebsocketMeetingAuth = ({
   const [isLoading, setIsLoading] = useState(true);
 
   const socket = useContext(WsContext);
-  const peer = useContext(PeerContext);
+  const { peer, onOpen } = useContext(PeerContext);
   const { meetingToken, user } = useAuth();
   const router = useRouter();
   const meetingId = router.query.meetingCode;
 
-  
-
-
   useEffect(() => {
-    peer?.on("close", () => {
-      alert("close");
-    });
+    if (socket && meetingToken && peer) {
+      socket?.emit(`/meeting/join`, {
+        meeting_token: meetingToken,
+        user_id: user?.id,
+        peer_id: peer.id,
+      });
 
-    peer?.on("disconnected", () => {
-      alert("disconnected");
-    });
-
-    peer?.on("open", id => {
-      if (socket && meetingToken) {
-        socket?.emit(`/meeting/join`, {
-          meeting_token: meetingToken,
-          user_id: user?.id,
-          peer_id: id,
-        });
-
-        console.log("emitted socket");
-
-        socket.on(`/meeting/${socket.id}/join`, data => {
-          console.log("🚀 ~~ on call room:", data);
-          if (data.data?.accepted) {
-            if (onSuccess) {
-              onSuccess(data, peer);
-              setIsLoading(false);
-            }
-          } else {
+      socket.on(`/meeting/${socket.id}/join`, data => {
+        if (data.data?.accepted) {
+          if (onSuccess) {
+            onSuccess(data, peer);
             setIsLoading(false);
-            if (onError) {
-              console.log("🚀 ~~ useEffect ~~ data:", data);
-              onError(data.message);
-            }
           }
-        });
-      } else {
-        if (onError) onError("Something went wrong");
-      }
-    });
+        } else {
+          setIsLoading(false);
+          if (onError) {
+            onError(data.message);
+          }
+        }
+      });
+    } else {
+      if (onError) onError("Something went wrong");
+    }
 
     return () => {};
   }, [socket, peer, meetingToken]);

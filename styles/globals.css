@@ -66,5 +66,13 @@
   transform: rotateY(180deg);
   -webkit-transform: rotateY(180deg); /* Safari and Chrome */
   -moz-transform: rotateY(180deg); /* Firefox */
-  filter: brightness(1.2) contrast(1) saturate(1.2);
+  filter: brightness(1.2) contrast(0.8) saturate(1.2);
 }
+
+.remote-video-element {
+  transform: rotateY(180deg);
+  -webkit-transform: rotateY(180deg); /* Safari and Chrome */
+  -moz-transform: rotateY(180deg); /* Firefox */
+  filter: brightness(1.2) contrast(0.8) saturate(1.2);
+}
+
